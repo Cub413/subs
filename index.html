@@ -1,75 +1,102 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="UTF-8">
-  <title>CI Studios Counter</title>
-  
-  <style>
-    body {
-      margin: 0;
-      background: transparent;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: Arial, sans-serif;
-    }
-    
-    #counter {
-      font-size: 110px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
-      transition: transform 0.3s;
-    }
-    
-    .pop {
-      transform: scale(1.1);
-    }
-  </style>
+<meta charset="UTF-8">
+<title>CI Studios Sub Goal Gradient</title>
+
+<style>
+body{
+margin:0;
+background:transparent;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+font-family:Arial, sans-serif;
+}
+
+#container{
+text-align:center;
+width:80%;
+}
+
+#label{
+font-size:28px;
+color:white;
+text-shadow:0 0 10px #000;
+margin-bottom:10px;
+}
+
+#bar-container{
+width:100%;
+height:40px;
+background:rgba(255,255,255,0.1);
+border-radius:20px;
+overflow:hidden;
+margin-top:15px;
+box-shadow:0 0 10px rgba(0,0,0,0.3);
+position:relative;
+}
+
+#bar{
+width:0%;
+height:100%;
+border-radius:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-weight:bold;
+font-size:18px;
+text-shadow:0 0 5px #000;
+transition: width 1s ease, background 1s ease;
+background: linear-gradient(to right, red, yellow, orange);
+background-size: 100% 100%;
+background-repeat: no-repeat;
+}
+</style>
 </head>
 
 <body>
-  
-  <div id="counter">Subs: ...</div>
-  
-  <script>
-    const counter = document.getElementById("counter");
-    const channel = "UC8ZeH9sYYbrnhlBZZ56c3Pg";
-    
-    let last = 0;
-    
-    async function update() {
-      
-      try {
-        
-        const res = await fetch("https://mixerno.space/api/youtube-channel-counter/user/" + channel);
-        const data = await res.json();
-        
-        let subs = data.counts[0].count;
-        
-        counter.textContent = "Subs: " + Number(subs).toLocaleString();
-        
-        if (subs != last) {
-          counter.classList.add("pop");
-          setTimeout(() => counter.classList.remove("pop"), 300);
-        }
-        
-        last = subs;
-        
-      } catch (e) {
-        
-        counter.textContent = "Error";
-        
-      }
-      
-    }
-    
-    update();
-    setInterval(update, 5000);
-  </script>
-  
-</body>
 
+<div id="container">
+<div id="label">C.I Studios - Objetivo de Subs</div>
+<div id="bar-container">
+<div id="bar">0 / 10,000</div>
+</div>
+</div>
+
+<script>
+const bar = document.getElementById("bar");
+const channel = "UC8ZeH9sYYbrnhlBZZ56c3Pg";
+const goal = 10000;
+
+async function update(){
+try{
+const res = await fetch("https://mixerno.space/api/youtube-channel-counter/user/" + channel);
+const data = await res.json();
+
+let subs = data.counts[0].count;
+let progress = Math.min(subs / goal, 1);
+
+// actualizar ancho de la barra
+bar.style.width = (progress * 100) + "%";
+
+// actualizar texto dentro de la barra
+bar.textContent = `${Number(subs).toLocaleString()} / ${goal.toLocaleString()}`;
+
+// crear gradiente progresivo solo hasta la parte actual (sin verde al final)
+bar.style.background = `linear-gradient(to right, red, yellow, orange ${progress*100}%, rgba(0,0,0,0) ${progress*100}%)`;
+
+}catch(e){
+bar.textContent = "Error";
+bar.style.background = "gray";
+}
+}
+
+update();
+setInterval(update,5000);
+</script>
+
+</body>
 </html>
