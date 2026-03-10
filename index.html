@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>CI Studios Counter</title>
+  
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    
+    #counter {
+      font-size: 110px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+      transition: transform 0.3s;
+    }
+    
+    .pop {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div id="counter">Subs: ...</div>
+  
+  <script>
+    const counter = document.getElementById("counter");
+    const channel = "UC8ZeH9sYYbrnhlBZZ56c3Pg";
+    
+    let last = 0;
+    
+    async function update() {
+      
+      try {
+        
+        const res = await fetch("https://mixerno.space/api/youtube-channel-counter/user/" + channel);
+        const data = await res.json();
+        
+        let subs = data.counts[0].count;
+        
+        counter.textContent = "Subs: " + Number(subs).toLocaleString();
+        
+        if (subs != last) {
+          counter.classList.add("pop");
+          setTimeout(() => counter.classList.remove("pop"), 300);
+        }
+        
+        last = subs;
+        
+      } catch (e) {
+        
+        counter.textContent = "Error";
+        
+      }
+      
+    }
+    
+    update();
+    setInterval(update, 5000);
+  </script>
+  
+</body>
+
+</html>
